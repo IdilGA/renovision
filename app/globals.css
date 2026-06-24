@@ -7,20 +7,36 @@
   --border: #ece8e2;
   --accent: #5c7d63;
   --accent-light: #eaf1eb;
-  --accent-dark: #3d5c43;
-  --beige: #ede8df;
   --muted: #9b9189;
   --dark: #1c1917;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
 
 body {
   background: var(--bg);
   color: var(--dark);
   font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   -webkit-font-smoothing: antialiased;
-  overscroll-behavior: none;
+  overscroll-behavior-y: none;
+  /* Prevent content jumping when keyboard appears */
+  height: 100%;
+}
+
+/* Prevent iOS double-tap zoom */
+* { touch-action: manipulation; }
+
+/* All inputs must be 16px to prevent iOS zoom */
+input, textarea, select {
+  font-size: 16px !important;
+  font-family: inherit;
 }
 
 .mobile-container {
@@ -32,7 +48,68 @@ body {
   overflow-x: hidden;
 }
 
-.page-content { padding-bottom: 90px; }
+/* Respect iPhone safe areas */
+.page-content {
+  padding-bottom: calc(80px + var(--safe-bottom));
+}
+
+.safe-top {
+  padding-top: calc(20px + var(--safe-top));
+}
+
+/* Minimum touch target 44px (Apple HIG) */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Momentum scroll on iOS */
+.scroll-smooth {
+  -webkit-overflow-scrolling: touch;
+  overflow-y: auto;
+}
+
+/* Hide scrollbar */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-button, a { -webkit-tap-highlight-color: transparent; }
+
+/* Prevent selection on UI elements */
+button, a {
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Skeleton shimmer */
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #ece8e2 25%, #f5f3ef 50%, #ece8e2 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: 8px;
+}
+
+/* Fade up entrance */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-up { animation: fadeUp 0.35s ease both; }
+
+/* Toast slide in */
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.95); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes toastOut {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to   { opacity: 0; transform: translateY(20px) scale(0.95); }
+}

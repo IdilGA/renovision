@@ -48,7 +48,7 @@ function KamerToevoegen() {
       <input ref={uploadRef} type="file" accept="image/*" style={{ display: "none" }} onChange={(e) => verwerkBestand(e.target.files?.[0])} />
 
       {/* Header */}
-      <div style={{ padding: "56px 24px 20px", background: "#fff", borderBottom: "1px solid #ece8e2", display: "flex", alignItems: "center", gap: 12 }}>
+      <div style={{ paddingTop: "calc(52px + env(safe-area-inset-top, 0px))", paddingBottom: 20, paddingLeft: 24, paddingRight: 24, background: "#fff", borderBottom: "1px solid #ece8e2", display: "flex", alignItems: "center", gap: 12 }}>
         <button onClick={() => router.back()} style={{ background: "#f5f3ef", border: "none", borderRadius: "50%", width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0 }}>
           <ChevronLeft size={20} color="#1c1917" />
         </button>
@@ -162,7 +162,7 @@ function KamerToevoegen() {
       </div>
 
       {/* Doorgaan knop */}
-      <div style={{ padding: "8px 24px 48px" }}>
+      <div style={{ padding: "8px 24px", paddingBottom: "calc(32px + env(safe-area-inset-bottom, 0px))" }}>
         <button
           onClick={() => geselecteerd && doorgaan(geselecteerd)}
           disabled={!geselecteerd}

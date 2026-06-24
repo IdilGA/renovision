@@ -38,7 +38,10 @@ export default function ProfielPagina() {
         <div
           style={{
             background: "linear-gradient(160deg, #1c1917 0%, #2d2926 100%)",
-            padding: "60px 24px 32px",
+            paddingTop: "calc(52px + env(safe-area-inset-top, 0px))",
+            paddingBottom: 32,
+            paddingLeft: 24,
+            paddingRight: 24,
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 28 }}>

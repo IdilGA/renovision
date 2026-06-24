@@ -25,7 +25,7 @@ export default function FavorietenPagina() {
   return (
     <div className="mobile-container">
       <div className="page-content">
-        <div style={{ padding: "60px 24px 20px", background: "#fff", borderBottom: "1px solid #ece8e2" }}>
+        <div style={{ paddingTop: "calc(52px + env(safe-area-inset-top, 0px))", paddingBottom: 20, paddingLeft: 24, paddingRight: 24, background: "#fff", borderBottom: "1px solid #ece8e2" }}>
           <h1 style={{ fontSize: 28, fontWeight: 800, color: "#1c1917", letterSpacing: -0.5, marginBottom: 2 }}>
             Favorieten
           </h1>

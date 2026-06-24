@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, FolderOpen, Heart, User } from "lucide-react";
+import { motion } from "framer-motion";
 
 const tabs = [
   { href: "/home", icon: Home, label: "Home" },
@@ -22,15 +23,15 @@ export default function BottomNavigation() {
         transform: "translateX(-50%)",
         width: "100%",
         maxWidth: 390,
-        background: "rgba(255,255,255,0.96)",
+        background: "rgba(255,255,255,0.97)",
         backdropFilter: "blur(24px)",
         WebkitBackdropFilter: "blur(24px)",
-        borderTop: "1px solid rgba(236,232,226,0.8)",
-        padding: "10px 0 22px",
+        borderTop: "1px solid rgba(236,232,226,0.9)",
+        paddingBottom: "env(safe-area-inset-bottom, 0px)",
         zIndex: 100,
       }}
     >
-      <div style={{ display: "flex", justifyContent: "space-around" }}>
+      <div style={{ display: "flex", justifyContent: "space-around", paddingTop: 10, paddingBottom: 8 }}>
         {tabs.map(({ href, icon: Icon, label }) => {
           const active = pathname === href || pathname.startsWith(href + "/");
           return (
@@ -43,25 +44,34 @@ export default function BottomNavigation() {
                 alignItems: "center",
                 gap: 4,
                 padding: "6px 18px",
+                minWidth: 60,
+                minHeight: 44,
+                justifyContent: "center",
                 textDecoration: "none",
                 color: active ? "#5c7d63" : "#9b9189",
-                transition: "color 0.2s",
                 position: "relative",
               }}
             >
               {active && (
-                <div
+                <motion.div
+                  layoutId="nav-indicator"
                   style={{
                     position: "absolute",
                     top: -10,
-                    width: 32,
+                    width: 28,
                     height: 3,
                     borderRadius: "0 0 3px 3px",
                     background: "#5c7d63",
                   }}
+                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
                 />
               )}
-              <Icon size={22} strokeWidth={active ? 2.5 : 1.8} />
+              <motion.div
+                animate={{ scale: active ? 1.1 : 1 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Icon size={22} strokeWidth={active ? 2.5 : 1.8} />
+              </motion.div>
               <span style={{ fontSize: 10, fontWeight: active ? 700 : 500, letterSpacing: 0.2 }}>
                 {label}
               </span>

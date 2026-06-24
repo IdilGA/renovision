@@ -46,7 +46,7 @@ export default function HomePage() {
     <div className="mobile-container">
       <div className="page-content">
         {/* Header */}
-        <motion.div {...fade(0)} style={{ padding: "60px 24px 20px", background: "#fff", borderBottom: "1px solid #ece8e2" }}>
+        <motion.div {...fade(0)} style={{ paddingTop: "calc(52px + env(safe-area-inset-top, 0px))", paddingBottom: 20, paddingLeft: 24, paddingRight: 24, background: "#fff", borderBottom: "1px solid #ece8e2" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
             <div>
               <p style={{ fontSize: 13, color: "#9b9189", fontWeight: 500, marginBottom: 4 }}>Welkom terug 👋</p>

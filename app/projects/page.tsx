@@ -40,7 +40,7 @@ export default function ProjectenPagina() {
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.32 }}
-          style={{ padding: "60px 24px 20px", background: "#fff", borderBottom: "1px solid #ece8e2" } as React.CSSProperties}
+          style={{ paddingTop: "calc(52px + env(safe-area-inset-top, 0px))", paddingBottom: 20, paddingLeft: 24, paddingRight: 24, background: "#fff", borderBottom: "1px solid #ece8e2" } as React.CSSProperties}
         >
           <h1 style={{ fontSize: 28, fontWeight: 800, color: "#1c1917", letterSpacing: -0.5, marginBottom: 2 }}>Mijn Ontwerpen</h1>
           <p style={{ fontSize: 13, color: "#9b9189", fontWeight: 500 }}>{projecten.length} kamerontwerpen opgeslagen</p>
