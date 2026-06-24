@@ -2,6 +2,7 @@
 import { useEffect, useState, useRef, Suspense } from "react";
 import { useRouter, useSearchParams, useParams } from "next/navigation";
 import { ChevronLeft, Save, GitCompare, Plus, Palette, Layers, Camera, ImagePlus, Check } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import FurnitureCard from "@/components/FurnitureCard";
 import ColorPicker from "@/components/ColorPicker";
 import RoomPreview from "@/components/RoomPreview";
@@ -207,66 +208,75 @@ function EditorInhoud() {
 
       {/* Scrollbaar paneel */}
       <div style={{ flex: 1, overflow: "auto", padding: "0 20px 24px" }} className="no-scrollbar">
+        <AnimatePresence mode="wait">
 
-        {/* ── Meubels ── */}
-        {actieefPaneel === "meubels" && (
-          <>
-            <div style={{ overflowX: "auto", marginBottom: 14 }} className="no-scrollbar">
-              <div style={{ display: "flex", gap: 8, width: "max-content" }}>
-                {CATEGORIEEN.map((cat) => (
-                  <button
-                    key={cat}
-                    onClick={() => setActieveCategorie(cat)}
-                    style={{
-                      padding: "8px 16px",
-                      borderRadius: 20,
-                      border: "none",
-                      background: actieveCategorie === cat ? "#5c7d63" : "#fff",
-                      color: actieveCategorie === cat ? "#fff" : "#6b6460",
-                      fontSize: 12,
-                      fontWeight: 700,
-                      cursor: "pointer",
-                      whiteSpace: "nowrap",
-                      boxShadow: "0 1px 6px rgba(0,0,0,0.06)",
-                      transition: "all 0.2s",
-                      fontFamily: "inherit",
-                    }}
-                  >
-                    {cat}
-                  </button>
-                ))}
+          {actieefPaneel === "meubels" && (
+            <motion.div key="meubels" initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 12 }} transition={{ duration: 0.22 }}>
+              <div style={{ overflowX: "auto", marginBottom: 14 }} className="no-scrollbar">
+                <div style={{ display: "flex", gap: 8, width: "max-content" }}>
+                  {CATEGORIEEN.map((cat) => (
+                    <motion.button
+                      key={cat}
+                      onClick={() => setActieveCategorie(cat)}
+                      whileTap={{ scale: 0.93 }}
+                      style={{
+                        padding: "8px 16px", borderRadius: 20, border: "none",
+                        background: actieveCategorie === cat ? "#5c7d63" : "#fff",
+                        color: actieveCategorie === cat ? "#fff" : "#6b6460",
+                        fontSize: 12, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap",
+                        boxShadow: "0 1px 6px rgba(0,0,0,0.06)", fontFamily: "inherit",
+                        transition: "background 0.2s, color 0.2s",
+                      }}
+                    >
+                      {cat}
+                    </motion.button>
+                  ))}
+                </div>
               </div>
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-              {gefilterdeMenubels.map((item) => (
-                <FurnitureCard
-                  key={item.id}
-                  item={item}
-                  added={meubelsIds.includes(item.id)}
-                  onAdd={() => wisselMeubel(item.id)}
-                />
-              ))}
-            </div>
-          </>
-        )}
+              <AnimatePresence mode="popLayout">
+                <motion.div
+                  key={actieveCategorie}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                  style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}
+                >
+                  {gefilterdeMenubels.map((item, i) => (
+                    <FurnitureCard
+                      key={item.id}
+                      item={item}
+                      index={i}
+                      added={meubelsIds.includes(item.id)}
+                      onAdd={() => wisselMeubel(item.id)}
+                    />
+                  ))}
+                </motion.div>
+              </AnimatePresence>
+            </motion.div>
+          )}
 
-        {/* ── Kleuren ── */}
-        {actieefPaneel === "kleuren" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
-            {foto && (
-              <div style={{ padding: "14px 16px", background: "#eaf1eb", borderRadius: 14, fontSize: 13, color: "#3d5c43", fontWeight: 600, lineHeight: 1.5 }}>
-                🎨 Kleuren zijn zichtbaar zonder roomfoto. Verwijder jouw foto om muur- & vloerkleuren te zien.
+          {actieefPaneel === "kleuren" && (
+            <motion.div key="kleuren" initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 12 }} transition={{ duration: 0.22 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
+                {foto && (
+                  <div style={{ padding: "14px 16px", background: "#eaf1eb", borderRadius: 14, fontSize: 13, color: "#3d5c43", fontWeight: 600, lineHeight: 1.5 }}>
+                    🎨 Kleuren zijn zichtbaar zonder roomfoto. Verwijder jouw foto om muur- & vloerkleuren te zien.
+                  </div>
+                )}
+                <ColorPicker label="Muurkleur" colors={WALL_COLORS} selected={muurKleur} onSelect={setMuurKleur} />
+                <ColorPicker label="Vloerkleur" colors={FLOOR_COLORS} selected={vloerKleur} onSelect={setVloerKleur} />
               </div>
-            )}
-            <ColorPicker label="Muurkleur" colors={WALL_COLORS} selected={muurKleur} onSelect={setMuurKleur} />
-            <ColorPicker label="Vloerkleur" colors={FLOOR_COLORS} selected={vloerKleur} onSelect={setVloerKleur} />
-          </div>
-        )}
+            </motion.div>
+          )}
 
-        {/* ── Stijl ── */}
-        {actieefPaneel === "stijl" && (
-          <StyleSelector selected={stijl} onSelect={setStijl} />
-        )}
+          {actieefPaneel === "stijl" && (
+            <motion.div key="stijl" initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 12 }} transition={{ duration: 0.22 }}>
+              <StyleSelector selected={stijl} onSelect={setStijl} />
+            </motion.div>
+          )}
+
+        </AnimatePresence>
       </div>
     </div>
   );
