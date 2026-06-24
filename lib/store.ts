@@ -50,3 +50,40 @@ export function toggleFavorite(id: string): boolean {
 export function generateId(): string {
   return `proj_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
 }
+
+// Room photos stored separately (base64) to keep project JSON small
+export function saveRoomPhoto(projectId: string, dataUrl: string): void {
+  localStorage.setItem(`renovision_photo_${projectId}`, dataUrl);
+}
+
+export function getRoomPhoto(projectId: string): string | null {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem(`renovision_photo_${projectId}`);
+}
+
+export function deleteRoomPhoto(projectId: string): void {
+  localStorage.removeItem(`renovision_photo_${projectId}`);
+}
+
+// Resize image to max 900px wide and return base64
+export function resizeImage(file: File, maxWidth = 900): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const scale = Math.min(1, maxWidth / img.width);
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width * scale;
+        canvas.height = img.height * scale;
+        const ctx = canvas.getContext("2d")!;
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL("image/jpeg", 0.8));
+      };
+      img.onerror = reject;
+      img.src = e.target!.result as string;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
