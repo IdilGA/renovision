@@ -5,9 +5,9 @@ import { Home, FolderOpen, Heart, User } from "lucide-react";
 
 const tabs = [
   { href: "/home", icon: Home, label: "Home" },
-  { href: "/projects", icon: FolderOpen, label: "Projects" },
-  { href: "/favorites", icon: Heart, label: "Favorites" },
-  { href: "/profile", icon: User, label: "Profile" },
+  { href: "/projects", icon: FolderOpen, label: "Ontwerpen" },
+  { href: "/favorites", icon: Heart, label: "Favorieten" },
+  { href: "/profile", icon: User, label: "Profiel" },
 ];
 
 export default function BottomNavigation() {
@@ -22,10 +22,11 @@ export default function BottomNavigation() {
         transform: "translateX(-50%)",
         width: "100%",
         maxWidth: 390,
-        background: "rgba(255,255,255,0.95)",
-        backdropFilter: "blur(20px)",
-        borderTop: "1px solid #e8e4de",
-        padding: "8px 0 20px",
+        background: "rgba(255,255,255,0.96)",
+        backdropFilter: "blur(24px)",
+        WebkitBackdropFilter: "blur(24px)",
+        borderTop: "1px solid rgba(236,232,226,0.8)",
+        padding: "10px 0 22px",
         zIndex: 100,
       }}
     >
@@ -41,14 +42,27 @@ export default function BottomNavigation() {
                 flexDirection: "column",
                 alignItems: "center",
                 gap: 4,
-                padding: "8px 20px",
+                padding: "6px 18px",
                 textDecoration: "none",
-                color: active ? "#6b8f71" : "#9e9189",
+                color: active ? "#5c7d63" : "#9b9189",
                 transition: "color 0.2s",
+                position: "relative",
               }}
             >
+              {active && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: -10,
+                    width: 32,
+                    height: 3,
+                    borderRadius: "0 0 3px 3px",
+                    background: "#5c7d63",
+                  }}
+                />
+              )}
               <Icon size={22} strokeWidth={active ? 2.5 : 1.8} />
-              <span style={{ fontSize: 10, fontWeight: active ? 600 : 400, letterSpacing: 0.3 }}>
+              <span style={{ fontSize: 10, fontWeight: active ? 700 : 500, letterSpacing: 0.2 }}>
                 {label}
               </span>
             </Link>

@@ -1,23 +1,24 @@
 "use client";
-import { STYLES, Style } from "@/lib/data";
+import { STYLES, Stijl } from "@/lib/data";
 
 interface Props {
-  selected: Style | null;
-  onSelect: (style: Style) => void;
+  selected: Stijl | null;
+  onSelect: (stijl: Stijl) => void;
 }
 
 export default function StyleSelector({ selected, onSelect }: Props) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-      {STYLES.map((style) => {
-        const isSelected = selected === style.id;
+    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+      {STYLES.map((stijl) => {
+        const isSelected = selected === stijl.id;
         return (
           <button
-            key={style.id}
-            onClick={() => onSelect(style.id)}
+            key={stijl.id}
+            onClick={() => onSelect(stijl.id)}
             style={{
-              background: isSelected ? "#1a1a1a" : "#fff",
-              border: isSelected ? "2px solid #1a1a1a" : "2px solid #e8e4de",
+              background: isSelected ? "#1c1917" : "#fff",
+              border: "2px solid",
+              borderColor: isSelected ? "#1c1917" : "#ece8e2",
               borderRadius: 18,
               padding: "16px 18px",
               display: "flex",
@@ -30,27 +31,28 @@ export default function StyleSelector({ selected, onSelect }: Props) {
             }}
           >
             {/* Color swatches */}
-            <div style={{ display: "flex", gap: 3, flexShrink: 0 }}>
-              {style.colors.map((c, i) => (
+            <div style={{ display: "flex", flexShrink: 0 }}>
+              {stijl.kleuren.map((c, i) => (
                 <div
                   key={i}
                   style={{
-                    width: 20,
-                    height: 20,
+                    width: 22,
+                    height: 22,
                     borderRadius: "50%",
                     background: c,
-                    border: "1.5px solid rgba(255,255,255,0.5)",
+                    border: "2px solid rgba(255,255,255,0.6)",
                     marginLeft: i > 0 ? -8 : 0,
+                    boxShadow: "0 1px 4px rgba(0,0,0,0.15)",
                   }}
                 />
               ))}
             </div>
             <div style={{ flex: 1 }}>
-              <div style={{ fontWeight: 700, fontSize: 15, color: isSelected ? "#fff" : "#1a1a1a", display: "flex", alignItems: "center", gap: 6 }}>
-                {style.emoji} {style.id}
+              <div style={{ fontWeight: 700, fontSize: 15, color: isSelected ? "#fff" : "#1c1917", display: "flex", alignItems: "center", gap: 6 }}>
+                {stijl.emoji} {stijl.id}
               </div>
-              <div style={{ fontSize: 12, color: isSelected ? "rgba(255,255,255,0.7)" : "#9e9189", marginTop: 2, lineHeight: 1.4 }}>
-                {style.description}
+              <div style={{ fontSize: 12, color: isSelected ? "rgba(255,255,255,0.65)" : "#9b9189", marginTop: 2, lineHeight: 1.4 }}>
+                {stijl.beschrijving}
               </div>
             </div>
             <div
@@ -58,8 +60,8 @@ export default function StyleSelector({ selected, onSelect }: Props) {
                 width: 22,
                 height: 22,
                 borderRadius: "50%",
-                border: isSelected ? "none" : "2px solid #e0dbd5",
-                background: isSelected ? "#6b8f71" : "transparent",
+                border: isSelected ? "none" : "2px solid #ddd8d2",
+                background: isSelected ? "#5c7d63" : "transparent",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",

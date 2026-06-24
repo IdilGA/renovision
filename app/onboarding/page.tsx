@@ -5,91 +5,82 @@ import { useState } from "react";
 const slides = [
   {
     emoji: "🏠",
-    title: "Visualize your future home",
-    desc: "See exactly how your renovated room will look before spending a single euro.",
+    titel: "Visualiseer jouw toekomstige woning",
+    beschrijving: "Zie precies hoe jouw gerenoveerde kamer eruitziet voordat je ook maar één euro uitgeeft.",
+    kleur: "linear-gradient(135deg, #eaf1eb, #f0ebe3)",
   },
   {
     emoji: "🛋️",
-    title: "Mix furniture from any store",
-    desc: "Combine pieces from IKEA, JYSK, H&M Home and more in one single room view.",
+    titel: "Combineer meubels van elke winkel",
+    beschrijving: "Meng producten van IKEA, JYSK, H&M Home en meer in één ruimteoverzicht.",
+    kleur: "linear-gradient(135deg, #ede8df, #f7f5f2)",
   },
   {
     emoji: "🎨",
-    title: "Find your perfect style",
-    desc: "Explore Japandi, Scandinavian, Modern and more with real color palettes.",
+    titel: "Vind jouw perfecte stijl",
+    beschrijving: "Verken Japandi, Scandinavisch, Modern en meer met echte kleurpaletten.",
+    kleur: "linear-gradient(135deg, #e8eef5, #f0ebe3)",
   },
   {
     emoji: "✨",
-    title: "Compare and decide with confidence",
-    desc: "Save multiple designs, compare them side by side, and pick what you love.",
+    titel: "Vergelijk en beslis met vertrouwen",
+    beschrijving: "Sla meerdere ontwerpen op, vergelijk ze naast elkaar en kies wat jij mooi vindt.",
+    kleur: "linear-gradient(135deg, #f5f0e8, #eaf1eb)",
   },
 ];
 
-export default function Onboarding() {
+export default function OnboardingPage() {
   const router = useRouter();
-  const [step, setStep] = useState(0);
+  const [stap, setStap] = useState(0);
 
-  function next() {
-    if (step < slides.length - 1) {
-      setStep(step + 1);
-    } else {
+  function volgende() {
+    if (stap < slides.length - 1) setStap(stap + 1);
+    else {
       localStorage.setItem("renovision_onboarded", "1");
       router.push("/home");
     }
   }
 
-  function skip() {
+  function overslaan() {
     localStorage.setItem("renovision_onboarded", "1");
     router.push("/home");
   }
 
-  const slide = slides[step];
-  const isLast = step === slides.length - 1;
+  const slide = slides[stap];
+  const isLaatste = stap === slides.length - 1;
 
   return (
     <div
       className="mobile-container"
-      style={{
-        minHeight: "100dvh",
-        display: "flex",
-        flexDirection: "column",
-        background: "#faf9f7",
-      }}
+      style={{ minHeight: "100dvh", display: "flex", flexDirection: "column", background: "#f7f5f2" }}
     >
-      {/* Skip */}
+      {/* Overslaan */}
       <div style={{ padding: "20px 24px 0", display: "flex", justifyContent: "flex-end" }}>
-        {!isLast && (
+        {!isLaatste && (
           <button
-            onClick={skip}
-            style={{
-              background: "none",
-              border: "none",
-              fontSize: 14,
-              color: "#9e9189",
-              cursor: "pointer",
-              padding: "8px 0",
-              fontWeight: 500,
-            }}
+            onClick={overslaan}
+            style={{ background: "none", border: "none", fontSize: 14, color: "#9b9189", cursor: "pointer", padding: "8px 4px", fontWeight: 600 }}
           >
-            Skip
+            Overslaan
           </button>
         )}
       </div>
 
-      {/* Illustration */}
+      {/* Illustratie */}
       <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "0 32px" }}>
         <div
           style={{
-            width: 180,
-            height: 180,
-            borderRadius: "50%",
-            background: "linear-gradient(135deg, #e8f0e9, #f0ebe3)",
+            width: 200,
+            height: 200,
+            borderRadius: 40,
+            background: slide.kleur,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            fontSize: 80,
+            fontSize: 88,
             marginBottom: 48,
-            boxShadow: "0 20px 60px rgba(107,143,113,0.15)",
+            boxShadow: "0 20px 60px rgba(0,0,0,0.08)",
+            transition: "all 0.4s ease",
           }}
         >
           {slide.emoji}
@@ -99,55 +90,61 @@ export default function Onboarding() {
           style={{
             fontSize: 28,
             fontWeight: 800,
-            color: "#1a1a1a",
+            color: "#1c1917",
             textAlign: "center",
             lineHeight: 1.2,
             marginBottom: 16,
             letterSpacing: -0.5,
           }}
         >
-          {slide.title}
+          {slide.titel}
         </h1>
-        <p style={{ fontSize: 16, color: "#6b6460", textAlign: "center", lineHeight: 1.6, maxWidth: 300 }}>
-          {slide.desc}
+        <p style={{ fontSize: 16, color: "#6b6460", textAlign: "center", lineHeight: 1.65, maxWidth: 300 }}>
+          {slide.beschrijving}
         </p>
       </div>
 
-      {/* Bottom */}
+      {/* Onderaan */}
       <div style={{ padding: "0 24px 48px" }}>
-        {/* Dots */}
-        <div style={{ display: "flex", justifyContent: "center", gap: 8, marginBottom: 32 }}>
+        {/* Voortgangsdots */}
+        <div style={{ display: "flex", justifyContent: "center", gap: 8, marginBottom: 28 }}>
           {slides.map((_, i) => (
             <div
               key={i}
               style={{
-                width: i === step ? 24 : 8,
+                width: i === stap ? 28 : 8,
                 height: 8,
                 borderRadius: 4,
-                background: i === step ? "#6b8f71" : "#d8d0c8",
-                transition: "all 0.3s",
+                background: i === stap ? "#5c7d63" : "#d8d0c8",
+                transition: "all 0.3s ease",
               }}
             />
           ))}
         </div>
 
         <button
-          onClick={next}
+          onClick={volgende}
           style={{
             width: "100%",
-            padding: "18px",
-            background: "#1a1a1a",
+            padding: "19px",
+            background: "#1c1917",
             color: "#fff",
             border: "none",
             borderRadius: 18,
             fontSize: 17,
             fontWeight: 700,
             cursor: "pointer",
-            letterSpacing: -0.3,
+            letterSpacing: -0.2,
           }}
         >
-          {isLast ? "Start designing ✨" : "Continue"}
+          {isLaatste ? "Begin met ontwerpen ✨" : "Volgende"}
         </button>
+
+        {stap === 0 && (
+          <p style={{ textAlign: "center", fontSize: 12, color: "#c0b8b0", marginTop: 16 }}>
+            Geen account nodig · Gratis te gebruiken
+          </p>
+        )}
       </div>
     </div>
   );

@@ -5,70 +5,61 @@ import { Plus, Search } from "lucide-react";
 import BottomNavigation from "@/components/BottomNavigation";
 import ProjectCard from "@/components/ProjectCard";
 import { getProjects, getFavorites, toggleFavorite, generateId } from "@/lib/store";
-import { RoomDesign, Style } from "@/lib/data";
+import { KamerOntwerp, Stijl } from "@/lib/data";
 
-const STYLE_FILTERS: (Style | "All")[] = ["All", "Japandi", "Scandinavian", "Modern", "Industrial", "Hotel Chic"];
+const STIJL_FILTERS: (Stijl | "Alles")[] = ["Alles", "Japandi", "Scandinavisch", "Modern", "Industrieel", "Hotel Chic"];
 
-export default function ProjectsPage() {
+export default function ProjectenPagina() {
   const router = useRouter();
-  const [projects, setProjects] = useState<RoomDesign[]>([]);
-  const [favorites, setFavorites] = useState<string[]>([]);
-  const [filter, setFilter] = useState<Style | "All">("All");
-  const [search, setSearch] = useState("");
+  const [projecten, setProjecten] = useState<KamerOntwerp[]>([]);
+  const [favorieten, setFavorieten] = useState<string[]>([]);
+  const [filter, setFilter] = useState<Stijl | "Alles">("Alles");
+  const [zoek, setZoek] = useState("");
 
   useEffect(() => {
-    setProjects(getProjects());
-    setFavorites(getFavorites());
+    setProjecten(getProjects());
+    setFavorieten(getFavorites());
   }, []);
 
-  function handleFavorite(id: string) {
+  function handleFavoriet(id: string) {
     toggleFavorite(id);
-    setFavorites(getFavorites());
+    setFavorieten(getFavorites());
   }
 
-  const filtered = projects.filter((p) => {
-    const matchStyle = filter === "All" || p.style === filter;
-    const matchSearch = p.name.toLowerCase().includes(search.toLowerCase());
-    return matchStyle && matchSearch;
+  const gefilterd = projecten.filter((p) => {
+    const stijlMatch = filter === "Alles" || (p.stijl ?? p.style) === filter;
+    const zoekMatch = (p.naam ?? p.name ?? "").toLowerCase().includes(zoek.toLowerCase());
+    return stijlMatch && zoekMatch;
   });
 
   return (
     <div className="mobile-container">
       <div className="page-content">
         {/* Header */}
-        <div style={{ padding: "60px 24px 20px" }}>
-          <h1 style={{ fontSize: 28, fontWeight: 800, color: "#1a1a1a", letterSpacing: -0.5, marginBottom: 4 }}>
-            My Designs
+        <div style={{ padding: "60px 24px 20px", background: "#fff", borderBottom: "1px solid #ece8e2" }}>
+          <h1 style={{ fontSize: 28, fontWeight: 800, color: "#1c1917", letterSpacing: -0.5, marginBottom: 2 }}>
+            Mijn Ontwerpen
           </h1>
-          <p style={{ fontSize: 14, color: "#9e9189" }}>{projects.length} room designs</p>
+          <p style={{ fontSize: 13, color: "#9b9189", fontWeight: 500 }}>{projecten.length} kamerontwerpen opgeslagen</p>
         </div>
 
-        {/* Search */}
-        <div style={{ padding: "0 24px 16px" }}>
+        {/* Zoekbalk */}
+        <div style={{ padding: "16px 24px 12px" }}>
           <div style={{ position: "relative" }}>
-            <Search size={16} color="#9e9189" style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)" }} />
+            <Search size={16} color="#9b9189" style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)" }} />
             <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search your designs..."
-              style={{
-                width: "100%",
-                padding: "13px 14px 13px 40px",
-                background: "#fff",
-                border: "1.5px solid #e8e4de",
-                borderRadius: 16,
-                fontSize: 14,
-                color: "#1a1a1a",
-                outline: "none",
-              }}
+              value={zoek}
+              onChange={(e) => setZoek(e.target.value)}
+              placeholder="Zoek in jouw ontwerpen..."
+              style={{ width: "100%", padding: "13px 14px 13px 42px", background: "#fff", border: "1.5px solid #ece8e2", borderRadius: 16, fontSize: 14, color: "#1c1917", outline: "none", fontFamily: "inherit" }}
             />
           </div>
         </div>
 
-        {/* Style filter chips */}
-        <div style={{ padding: "0 24px 20px", overflowX: "auto" }} className="no-scrollbar">
-          <div style={{ display: "flex", gap: 8, width: "max-content" }}>
-            {STYLE_FILTERS.map((s) => (
+        {/* Stijlfilters */}
+        <div style={{ paddingLeft: 24, paddingBottom: 20, overflowX: "auto" }} className="no-scrollbar">
+          <div style={{ display: "flex", gap: 8, width: "max-content", paddingRight: 24 }}>
+            {STIJL_FILTERS.map((s) => (
               <button
                 key={s}
                 onClick={() => setFilter(s)}
@@ -76,13 +67,14 @@ export default function ProjectsPage() {
                   padding: "8px 16px",
                   borderRadius: 20,
                   border: "none",
-                  background: filter === s ? "#1a1a1a" : "#fff",
+                  background: filter === s ? "#1c1917" : "#fff",
                   color: filter === s ? "#fff" : "#6b6460",
                   fontSize: 13,
                   fontWeight: 600,
                   cursor: "pointer",
                   whiteSpace: "nowrap",
                   boxShadow: "0 1px 6px rgba(0,0,0,0.06)",
+                  transition: "all 0.2s",
                 }}
               >
                 {s}
@@ -91,21 +83,21 @@ export default function ProjectsPage() {
           </div>
         </div>
 
-        {/* Projects list */}
+        {/* Projecten */}
         <div style={{ padding: "0 24px", display: "flex", flexDirection: "column", gap: 14 }}>
-          {filtered.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "60px 0", color: "#9e9189" }}>
-              <div style={{ fontSize: 48, marginBottom: 12 }}>🏠</div>
-              <div style={{ fontWeight: 600, fontSize: 16, marginBottom: 4 }}>No designs yet</div>
-              <div style={{ fontSize: 13 }}>Create your first room design</div>
+          {gefilterd.length === 0 ? (
+            <div style={{ textAlign: "center", padding: "80px 0", color: "#9b9189" }}>
+              <div style={{ fontSize: 52, marginBottom: 14 }}>🏠</div>
+              <div style={{ fontWeight: 700, fontSize: 17, marginBottom: 6, color: "#1c1917" }}>Nog geen ontwerpen</div>
+              <div style={{ fontSize: 13, lineHeight: 1.5 }}>Maak jouw eerste kamerontwerp<br />en begin met visualiseren</div>
             </div>
           ) : (
-            filtered.map((p) => (
+            gefilterd.map((p) => (
               <ProjectCard
                 key={p.id}
                 project={p}
-                isFavorite={favorites.includes(p.id)}
-                onFavorite={() => handleFavorite(p.id)}
+                isFavorite={favorieten.includes(p.id)}
+                onFavorite={() => handleFavoriet(p.id)}
               />
             ))
           )}
@@ -122,17 +114,17 @@ export default function ProjectsPage() {
           width: 56,
           height: 56,
           borderRadius: "50%",
-          background: "#1a1a1a",
+          background: "#1c1917",
           border: "none",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           cursor: "pointer",
-          boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
+          boxShadow: "0 4px 20px rgba(0,0,0,0.28)",
           zIndex: 99,
         }}
       >
-        <Plus size={24} color="#fff" />
+        <Plus size={24} color="#fff" strokeWidth={2.5} />
       </button>
 
       <BottomNavigation />

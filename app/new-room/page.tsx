@@ -1,216 +1,141 @@
 "use client";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useRef, Suspense } from "react";
-import { ChevronLeft, Camera, Upload, Sparkles, X } from "lucide-react";
+import { ChevronLeft, Camera, Upload, ArrowRight, X } from "lucide-react";
 import { resizeImage, saveRoomPhoto } from "@/lib/store";
 
-const EXAMPLE_ROOMS = [
-  { id: "living", label: "Living Room", emoji: "🛋️", desc: "Sofa, coffee table, rug" },
-  { id: "bedroom", label: "Bedroom", emoji: "🛏️", desc: "Bed, nightstands, wardrobe" },
-  { id: "dining", label: "Dining Room", emoji: "🍽️", desc: "Table, chairs, sideboard" },
-  { id: "study", label: "Study / Office", emoji: "📚", desc: "Desk, bookshelf, chair" },
-  { id: "hallway", label: "Hallway", emoji: "🚪", desc: "Shoe rack, mirror, hooks" },
+const KAMER_TYPES = [
+  { id: "woonkamer", label: "Woonkamer", emoji: "🛋️", omschrijving: "Bank, salontafel, vloerkleed" },
+  { id: "slaapkamer", label: "Slaapkamer", emoji: "🛏️", omschrijving: "Bed, nachtkastjes, kledingkast" },
+  { id: "eetkamer", label: "Eetkamer", emoji: "🍽️", omschrijving: "Eettafel, stoelen, dressoir" },
+  { id: "werkkamer", label: "Werkkamer / Kantoor", emoji: "📚", omschrijving: "Bureau, boekenkast, stoel" },
+  { id: "hal", label: "Hal / Gang", emoji: "🚪", omschrijving: "Schoenenrek, spiegel, kapstok" },
 ];
 
-function NewRoomContent() {
+function KamerToevoegen() {
   const router = useRouter();
   const params = useSearchParams();
   const id = params.get("id") || "new";
-  const [selected, setSelected] = useState<string | null>(null);
-  const [roomName, setRoomName] = useState("");
-  const [photo, setPhoto] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [geselecteerd, setGeselecteerd] = useState<string | null>(null);
+  const [kamerNaam, setKamerNaam] = useState("");
+  const [foto, setFoto] = useState<string | null>(null);
+  const [laden, setLaden] = useState(false);
 
   const cameraRef = useRef<HTMLInputElement>(null);
   const uploadRef = useRef<HTMLInputElement>(null);
 
-  async function handleFile(file: File | undefined) {
-    if (!file) return;
-    setLoading(true);
+  async function verwerkBestand(bestand: File | undefined) {
+    if (!bestand) return;
+    setLaden(true);
     try {
-      const dataUrl = await resizeImage(file);
-      setPhoto(dataUrl);
+      const dataUrl = await resizeImage(bestand);
+      setFoto(dataUrl);
     } finally {
-      setLoading(false);
+      setLaden(false);
     }
   }
 
-  function proceed(type: string) {
-    const name = roomName || EXAMPLE_ROOMS.find((r) => r.id === type)?.label || "My Room";
-    if (photo) saveRoomPhoto(id, photo);
-    router.push(`/style-select?id=${id}&room=${type}&name=${encodeURIComponent(name)}`);
+  function doorgaan(type: string) {
+    const naam = kamerNaam || KAMER_TYPES.find((r) => r.id === type)?.label || "Mijn Kamer";
+    if (foto) saveRoomPhoto(id, foto);
+    router.push(`/style-select?id=${id}&room=${type}&name=${encodeURIComponent(naam)}`);
   }
 
   return (
-    <div className="mobile-container" style={{ minHeight: "100dvh", background: "#faf9f7" }}>
-      {/* Hidden file inputs */}
-      <input
-        ref={cameraRef}
-        type="file"
-        accept="image/*"
-        capture="environment"
-        style={{ display: "none" }}
-        onChange={(e) => handleFile(e.target.files?.[0])}
-      />
-      <input
-        ref={uploadRef}
-        type="file"
-        accept="image/*"
-        style={{ display: "none" }}
-        onChange={(e) => handleFile(e.target.files?.[0])}
-      />
+    <div className="mobile-container" style={{ minHeight: "100dvh", background: "#f7f5f2" }}>
+      {/* Verborgen inputs */}
+      <input ref={cameraRef} type="file" accept="image/*" capture="environment" style={{ display: "none" }} onChange={(e) => verwerkBestand(e.target.files?.[0])} />
+      <input ref={uploadRef} type="file" accept="image/*" style={{ display: "none" }} onChange={(e) => verwerkBestand(e.target.files?.[0])} />
 
       {/* Header */}
-      <div style={{ padding: "56px 24px 24px", display: "flex", alignItems: "center", gap: 12 }}>
-        <button
-          onClick={() => router.back()}
-          style={{ background: "#fff", border: "none", borderRadius: "50%", width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}
-        >
-          <ChevronLeft size={20} color="#1a1a1a" />
+      <div style={{ padding: "56px 24px 20px", background: "#fff", borderBottom: "1px solid #ece8e2", display: "flex", alignItems: "center", gap: 12 }}>
+        <button onClick={() => router.back()} style={{ background: "#f5f3ef", border: "none", borderRadius: "50%", width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0 }}>
+          <ChevronLeft size={20} color="#1c1917" />
         </button>
         <div>
-          <div style={{ fontSize: 11, color: "#9e9189", fontWeight: 500 }}>Step 1 of 3</div>
-          <h1 style={{ fontSize: 22, fontWeight: 800, color: "#1a1a1a", letterSpacing: -0.3 }}>Add a room</h1>
+          <div style={{ fontSize: 11, color: "#9b9189", fontWeight: 700, letterSpacing: 0.6 }}>STAP 1 VAN 3</div>
+          <h1 style={{ fontSize: 22, fontWeight: 800, color: "#1c1917", letterSpacing: -0.3 }}>Kamer toevoegen</h1>
         </div>
       </div>
 
-      <div style={{ padding: "0 24px" }}>
-        {/* Room name */}
+      <div style={{ padding: "20px 24px" }}>
+        {/* Kamernaam */}
         <div style={{ marginBottom: 24 }}>
-          <label style={{ fontSize: 12, fontWeight: 600, color: "#9e9189", letterSpacing: 0.5, textTransform: "uppercase", display: "block", marginBottom: 8 }}>
-            Room name (optional)
+          <label style={{ fontSize: 11, fontWeight: 700, color: "#9b9189", letterSpacing: 0.6, textTransform: "uppercase", display: "block", marginBottom: 10 }}>
+            Naam van jouw kamer (optioneel)
           </label>
           <input
-            value={roomName}
-            onChange={(e) => setRoomName(e.target.value)}
-            placeholder="e.g. My living room..."
-            style={{ width: "100%", padding: "14px 16px", background: "#fff", border: "1.5px solid #e8e4de", borderRadius: 16, fontSize: 15, color: "#1a1a1a", outline: "none" }}
+            value={kamerNaam}
+            onChange={(e) => setKamerNaam(e.target.value)}
+            placeholder="bijv. Mijn woonkamer..."
+            style={{ width: "100%", padding: "15px 16px", background: "#fff", border: "1.5px solid #ece8e2", borderRadius: 16, fontSize: 15, color: "#1c1917", outline: "none", fontFamily: "inherit" }}
           />
         </div>
 
-        {/* Photo section */}
+        {/* Foto sectie */}
         <div style={{ marginBottom: 24 }}>
-          <label style={{ fontSize: 12, fontWeight: 600, color: "#9e9189", letterSpacing: 0.5, textTransform: "uppercase", display: "block", marginBottom: 12 }}>
-            Add your room photo (optional)
+          <label style={{ fontSize: 11, fontWeight: 700, color: "#9b9189", letterSpacing: 0.6, textTransform: "uppercase", display: "block", marginBottom: 12 }}>
+            Voeg een foto toe van jouw kamer (optioneel)
           </label>
 
-          {photo ? (
-            /* Photo preview */
-            <div style={{ position: "relative", borderRadius: 18, overflow: "hidden" }}>
-              <img
-                src={photo}
-                alt="Room"
-                style={{ width: "100%", height: 200, objectFit: "cover", display: "block" }}
-              />
-              <div
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  background: "linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 50%)",
-                }}
-              />
-              <div style={{ position: "absolute", bottom: 12, left: 14, color: "#fff", fontSize: 13, fontWeight: 600 }}>
-                ✓ Photo added
+          {foto ? (
+            <div style={{ position: "relative", borderRadius: 20, overflow: "hidden" }}>
+              <img src={foto} alt="Kamer" style={{ width: "100%", height: 210, objectFit: "cover", display: "block" }} />
+              <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 45%)" }} />
+              <div style={{ position: "absolute", bottom: 14, left: 16, color: "#fff", fontSize: 13, fontWeight: 700, display: "flex", alignItems: "center", gap: 6 }}>
+                <span style={{ fontSize: 16 }}>✓</span> Foto toegevoegd
               </div>
-              <button
-                onClick={() => setPhoto(null)}
-                style={{
-                  position: "absolute",
-                  top: 10,
-                  right: 10,
-                  background: "rgba(0,0,0,0.5)",
-                  border: "none",
-                  borderRadius: "50%",
-                  width: 32,
-                  height: 32,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  cursor: "pointer",
-                }}
-              >
+              <button onClick={() => setFoto(null)} style={{ position: "absolute", top: 12, right: 12, background: "rgba(0,0,0,0.55)", border: "none", borderRadius: "50%", width: 34, height: 34, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
                 <X size={16} color="#fff" />
               </button>
-              {/* Retake buttons */}
-              <div style={{ position: "absolute", bottom: 12, right: 12, display: "flex", gap: 8 }}>
-                <button
-                  onClick={() => cameraRef.current?.click()}
-                  style={{ background: "rgba(255,255,255,0.9)", border: "none", borderRadius: 10, padding: "6px 10px", fontSize: 11, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}
-                >
-                  <Camera size={12} /> Retake
-                </button>
-              </div>
+              <button onClick={() => cameraRef.current?.click()} style={{ position: "absolute", bottom: 14, right: 14, background: "rgba(255,255,255,0.92)", border: "none", borderRadius: 12, padding: "7px 12px", fontSize: 12, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 4, color: "#1c1917", fontFamily: "inherit" }}>
+                <Camera size={13} /> Opnieuw
+              </button>
             </div>
           ) : (
-            /* Upload buttons */
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-              <button
-                onClick={() => cameraRef.current?.click()}
-                disabled={loading}
-                style={{
-                  background: "#fff",
-                  border: "1.5px dashed #d0c8c0",
-                  borderRadius: 18,
-                  padding: "22px 12px",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: 8,
-                  cursor: "pointer",
-                  transition: "border-color 0.2s",
-                }}
-              >
-                <Camera size={26} color="#6b8f71" />
-                <div style={{ fontSize: 13, fontWeight: 700, color: "#1a1a1a" }}>Take photo</div>
-                <div style={{ fontSize: 11, color: "#9e9189" }}>Open camera</div>
-              </button>
-              <button
-                onClick={() => uploadRef.current?.click()}
-                disabled={loading}
-                style={{
-                  background: "#fff",
-                  border: "1.5px dashed #d0c8c0",
-                  borderRadius: 18,
-                  padding: "22px 12px",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: 8,
-                  cursor: "pointer",
-                }}
-              >
-                <Upload size={26} color="#6b8f71" />
-                <div style={{ fontSize: 13, fontWeight: 700, color: "#1a1a1a" }}>Upload photo</div>
-                <div style={{ fontSize: 11, color: "#9e9189" }}>From gallery</div>
-              </button>
+              {[
+                { ref: cameraRef, icoon: Camera, label: "Foto maken", sub: "Open camera", kleur: "#eaf1eb", icoonKleur: "#5c7d63" },
+                { ref: uploadRef, icoon: Upload, label: "Foto uploaden", sub: "Uit galerij", kleur: "#f0ebe3", icoonKleur: "#8b6a50" },
+              ].map(({ ref, icoon: Icon, label, sub, kleur, icoonKleur }) => (
+                <button
+                  key={label}
+                  onClick={() => ref.current?.click()}
+                  disabled={laden}
+                  style={{ background: "#fff", border: "1.5px dashed #d8d0c8", borderRadius: 20, padding: "24px 12px", display: "flex", flexDirection: "column", alignItems: "center", gap: 10, cursor: "pointer" }}
+                >
+                  <div style={{ width: 52, height: 52, borderRadius: 16, background: kleur, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <Icon size={24} color={icoonKleur} />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: "#1c1917" }}>{label}</div>
+                    <div style={{ fontSize: 11, color: "#9b9189", marginTop: 2 }}>{sub}</div>
+                  </div>
+                </button>
+              ))}
             </div>
           )}
-
-          {loading && (
-            <div style={{ textAlign: "center", padding: "12px 0", fontSize: 13, color: "#9e9189" }}>
-              Processing photo...
-            </div>
-          )}
+          {laden && <p style={{ textAlign: "center", padding: "10px 0", fontSize: 13, color: "#9b9189", fontWeight: 500 }}>Foto verwerken...</p>}
         </div>
 
-        {/* Room types */}
+        {/* Kamer types */}
         <div>
-          <label style={{ fontSize: 12, fontWeight: 600, color: "#9e9189", letterSpacing: 0.5, textTransform: "uppercase", display: "block", marginBottom: 12 }}>
-            Choose room type
+          <label style={{ fontSize: 11, fontWeight: 700, color: "#9b9189", letterSpacing: 0.6, textTransform: "uppercase", display: "block", marginBottom: 12 }}>
+            Kies het type kamer
           </label>
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            {EXAMPLE_ROOMS.map((room) => {
-              const isSelected = selected === room.id;
+            {KAMER_TYPES.map((kamer) => {
+              const isSel = geselecteerd === kamer.id;
               return (
                 <button
-                  key={room.id}
-                  onClick={() => setSelected(room.id)}
+                  key={kamer.id}
+                  onClick={() => setGeselecteerd(kamer.id)}
                   style={{
-                    background: isSelected ? "#1a1a1a" : "#fff",
+                    background: isSel ? "#1c1917" : "#fff",
                     border: "2px solid",
-                    borderColor: isSelected ? "#1a1a1a" : "#e8e4de",
+                    borderColor: isSel ? "#1c1917" : "#ece8e2",
                     borderRadius: 18,
-                    padding: "14px 18px",
+                    padding: "15px 18px",
                     display: "flex",
                     alignItems: "center",
                     gap: 14,
@@ -218,15 +143,16 @@ function NewRoomContent() {
                     textAlign: "left",
                     transition: "all 0.2s",
                     width: "100%",
+                    fontFamily: "inherit",
                   }}
                 >
-                  <span style={{ fontSize: 28 }}>{room.emoji}</span>
+                  <span style={{ fontSize: 28 }}>{kamer.emoji}</span>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: 600, fontSize: 15, color: isSelected ? "#fff" : "#1a1a1a" }}>{room.label}</div>
-                    <div style={{ fontSize: 12, color: isSelected ? "rgba(255,255,255,0.6)" : "#9e9189", marginTop: 1 }}>{room.desc}</div>
+                    <div style={{ fontWeight: 700, fontSize: 15, color: isSel ? "#fff" : "#1c1917" }}>{kamer.label}</div>
+                    <div style={{ fontSize: 12, color: isSel ? "rgba(255,255,255,0.55)" : "#9b9189", marginTop: 2 }}>{kamer.omschrijving}</div>
                   </div>
-                  <div style={{ width: 22, height: 22, borderRadius: "50%", border: isSelected ? "none" : "2px solid #e0dbd5", background: isSelected ? "#6b8f71" : "transparent", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    {isSelected && <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#fff" }} />}
+                  <div style={{ width: 22, height: 22, borderRadius: "50%", border: isSel ? "none" : "2px solid #ddd8d2", background: isSel ? "#5c7d63" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    {isSel && <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#fff" }} />}
                   </div>
                 </button>
               );
@@ -235,40 +161,36 @@ function NewRoomContent() {
         </div>
       </div>
 
-      {/* Continue */}
-      <div style={{ padding: "24px 24px 48px" }}>
+      {/* Doorgaan knop */}
+      <div style={{ padding: "8px 24px 48px" }}>
         <button
-          onClick={() => selected && proceed(selected)}
-          disabled={!selected}
+          onClick={() => geselecteerd && doorgaan(geselecteerd)}
+          disabled={!geselecteerd}
           style={{
             width: "100%",
-            padding: "18px",
-            background: selected ? "#1a1a1a" : "#e8e4de",
-            color: selected ? "#fff" : "#9e9189",
+            padding: "19px",
+            background: geselecteerd ? "#1c1917" : "#ece8e2",
+            color: geselecteerd ? "#fff" : "#9b9189",
             border: "none",
             borderRadius: 18,
             fontSize: 17,
             fontWeight: 700,
-            cursor: selected ? "pointer" : "default",
+            cursor: geselecteerd ? "pointer" : "default",
             transition: "all 0.2s",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             gap: 8,
+            fontFamily: "inherit",
           }}
         >
-          <Sparkles size={18} />
-          Choose style
+          Kies jouw stijl <ArrowRight size={18} />
         </button>
       </div>
     </div>
   );
 }
 
-export default function NewRoomPage() {
-  return (
-    <Suspense>
-      <NewRoomContent />
-    </Suspense>
-  );
+export default function KamerToevoegPagina() {
+  return <Suspense><KamerToevoegen /></Suspense>;
 }

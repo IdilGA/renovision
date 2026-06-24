@@ -1,26 +1,49 @@
-import { RoomDesign, SAMPLE_PROJECTS } from "./data";
+import { KamerOntwerp, VOORBEELD_PROJECTEN } from "./data";
 
-const STORAGE_KEY = "renovision_projects";
-const FAVORITES_KEY = "renovision_favorites";
+const STORAGE_KEY = "renovision_projecten";
+const FAVORITES_KEY = "renovision_favorieten";
 
-export function getProjects(): RoomDesign[] {
-  if (typeof window === "undefined") return SAMPLE_PROJECTS;
+export function getProjects(): KamerOntwerp[] {
+  if (typeof window === "undefined") return VOORBEELD_PROJECTEN;
   const stored = localStorage.getItem(STORAGE_KEY);
   if (!stored) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(SAMPLE_PROJECTS));
-    return SAMPLE_PROJECTS;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(VOORBEELD_PROJECTEN));
+    return VOORBEELD_PROJECTEN;
   }
-  return JSON.parse(stored);
+  const projects = JSON.parse(stored) as KamerOntwerp[];
+  // Ensure English aliases are always set
+  return projects.map((p) => ({
+    ...p,
+    name: p.name ?? p.naam,
+    style: p.style ?? p.stijl,
+    wallColor: p.wallColor ?? p.muurKleur,
+    floorColor: p.floorColor ?? p.vloerKleur,
+    furniture: p.furniture ?? p.meubels,
+    createdAt: p.createdAt ?? p.aangemaakt,
+  }));
 }
 
-export function saveProject(project: RoomDesign): void {
+export function saveProject(project: KamerOntwerp): void {
+  // Sync all aliases before saving
+  const normalized = {
+    ...project,
+    naam: project.naam ?? project.name ?? "Mijn kamer",
+    stijl: project.stijl ?? project.style ?? "Japandi",
+    muurKleur: project.muurKleur ?? project.wallColor ?? "#f8f6f2",
+    vloerKleur: project.vloerKleur ?? project.floorColor ?? "#c8a96e",
+    meubels: project.meubels ?? project.furniture ?? [],
+    aangemaakt: project.aangemaakt ?? project.createdAt ?? new Date().toISOString().split("T")[0],
+    name: project.name ?? project.naam,
+    style: project.style ?? project.stijl,
+    wallColor: project.wallColor ?? project.muurKleur,
+    floorColor: project.floorColor ?? project.vloerKleur,
+    furniture: project.furniture ?? project.meubels,
+    createdAt: project.createdAt ?? project.aangemaakt,
+  };
   const projects = getProjects();
   const idx = projects.findIndex((p) => p.id === project.id);
-  if (idx >= 0) {
-    projects[idx] = project;
-  } else {
-    projects.unshift(project);
-  }
+  if (idx >= 0) projects[idx] = normalized;
+  else projects.unshift(normalized);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
 }
 
@@ -38,11 +61,8 @@ export function getFavorites(): string[] {
 export function toggleFavorite(id: string): boolean {
   const favs = getFavorites();
   const idx = favs.indexOf(id);
-  if (idx >= 0) {
-    favs.splice(idx, 1);
-  } else {
-    favs.push(id);
-  }
+  if (idx >= 0) favs.splice(idx, 1);
+  else favs.push(id);
   localStorage.setItem(FAVORITES_KEY, JSON.stringify(favs));
   return idx < 0;
 }
@@ -51,21 +71,19 @@ export function generateId(): string {
   return `proj_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
 }
 
-// Room photos stored separately (base64) to keep project JSON small
 export function saveRoomPhoto(projectId: string, dataUrl: string): void {
-  localStorage.setItem(`renovision_photo_${projectId}`, dataUrl);
+  localStorage.setItem(`renovision_foto_${projectId}`, dataUrl);
 }
 
 export function getRoomPhoto(projectId: string): string | null {
   if (typeof window === "undefined") return null;
-  return localStorage.getItem(`renovision_photo_${projectId}`);
+  return localStorage.getItem(`renovision_foto_${projectId}`);
 }
 
 export function deleteRoomPhoto(projectId: string): void {
-  localStorage.removeItem(`renovision_photo_${projectId}`);
+  localStorage.removeItem(`renovision_foto_${projectId}`);
 }
 
-// Resize image to max 900px wide and return base64
 export function resizeImage(file: File, maxWidth = 900): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -78,7 +96,7 @@ export function resizeImage(file: File, maxWidth = 900): Promise<string> {
         canvas.height = img.height * scale;
         const ctx = canvas.getContext("2d")!;
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        resolve(canvas.toDataURL("image/jpeg", 0.8));
+        resolve(canvas.toDataURL("image/jpeg", 0.82));
       };
       img.onerror = reject;
       img.src = e.target!.result as string;
